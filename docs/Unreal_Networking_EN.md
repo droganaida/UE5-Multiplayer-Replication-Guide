@@ -140,7 +140,7 @@ I promised we’d get back to this. How does movement replication actually work?
 
 Character movement replication is fully built-in — you usually don’t have to touch it. The animation runs locally, but the server checks the position: is the Pawn really allowed to be here? That’s how cheating is prevented.
 
-![img\_008](../images/img_008.jpg)
+![img\_009](../images/img_009.jpg)
 
 The server receives the client’s movement intent, approves or rejects it — so the player can’t phase through walls or teleport to Mars (unless your game allows it!). The client interpolates positions and plays animations smoothly.
 
@@ -173,11 +173,11 @@ The DM built a mountain — just forgot to bring the mini! So the players hit an
 
 What if the client spawns a Cube in the same spot?
 
-![img\_012](../images/img_012)
+![img\_012](../images/img_012.jpg)
 
 Now *everyone except the server* sees the Cube — but walking through it is easy. The server doesn’t know it exists, and the client can’t enforce world rules.
 
-![img\_013](../images/img_013)
+![img\_013](../images/img_013.jpg)
 
 Just like a player dropping a coffee mug on the D\&D map and declaring it’s a volcano — the DM just shrugs and moves the minis properly (or punishes the player for being cheeky).
 
@@ -194,11 +194,11 @@ Every Actor has replication settings:
 * `Replicates` — the Actor exists on both server and clients.
 * `Replicate Movement` — its position is synced for all clients (important for moving or physics objects).
 
-![img\_014](../images/img_014)
+![img\_014](../images/img_014.jpg)
 
 When you enable replication for your Cube, it’s visible and solid for everyone — just remember to keep the `Is Server` condition when spawning it.
 
-![img\_015](../images/img_015)
+![img\_015](../images/img_015.jpg)
 
 ---
 
@@ -206,17 +206,17 @@ When you enable replication for your Cube, it’s visible and solid for everyone
 
 What if the Actor has a physics component? Say, a soccer ball players can kick around together.
 
-![img\_016](../images/img_016)
+![img\_016](../images/img_016.jpg)
 
 Run the game — the ball appears for everyone, but each client sees it rolling differently. The physics sim runs locally — so each player sees a different reality. Chaos!
 
-![img\_017](../images/img_017)
+![img\_017](../images/img_017.jpg)
 
 The fix is simple: if an Actor has a physics component, it (and its parents) must have `Component Replicates` enabled.
 
-![img\_018](../images/img_018)
+![img\_018](../images/img_018.jpg)
 
-![img\_019](../images/img_019)
+![img\_019](../images/img_019.jpg)
 
 ---
 
@@ -277,8 +277,8 @@ In the case of health changes: definitely make that `Reliable`.
 Even so, visually nothing happens yet — the health bar only updates for the local player.
 But if you log `CurrentHP` in `Tick`, you’ll see each game instance knows the *real* HP for every player.
 
-![img\_025](../images/img_025)
-![img\_024](../images/img_024)
+![img\_025](../images/img_025.jpg)
+![img\_024](../images/img_024.jpg)
 
 **Tip:** If you use `Tick`, always check `Has Authority` first!
 
@@ -291,29 +291,29 @@ Logically, this should happen whenever `CurrentHP` changes.
 
 You *could* bind the ProgressBar’s `Percent` to the variable directly in the Widget.
 
-![img\_026](../images/img_026)
+![img\_026](../images/img_026.jpg)
 
 But it’s better practice to use **`RepNotify`**: mark `CurrentHP` with `RepNotify`, and Unreal will automatically generate a function that fires every time the variable changes.
 
-![img\_027](../images/img_027)
+![img\_027](../images/img_027.jpg)
 
 **Why is this better?**
 It runs *only* on the clients — so you don’t waste server RPCs for UI.
 Inside the `OnRepNotify` function, you can also fire an **Event Dispatcher** to handle the actual update.
 
-![img\_028](../images/img_028)
+![img\_028](../images/img_028.jpg)
 
 When you create the Widget, subscribe to the Dispatcher and write the logic to refresh the health bar.
 
-![img\_029](../images/img_029)
+![img\_029](../images/img_029.jpg)
 
 To make it clearer, you can recolor your own health bar using `Is Locally Controlled`.
 
-![img\_030](../images/img_030)
+![img\_030](../images/img_030.jpg)
 
 Now, when you run the game, all health bars update in sync — for every client and the server.
 
-![img\_031](../images/img_031)
+![img\_031](../images/img_031.jpg)
 
 ---
 
@@ -335,7 +335,7 @@ Let’s wrap up with how the main Unreal Engine classes behave in a networked ga
 
 * **Widget (UMG)** *(formerly HUD)* — draws the UI: crosshairs, score, indicators. Widgets live only on the client — they do *not* replicate. The server knows nothing about your UI.
 
-![img\_032](../images/img_032)
+![img\_032](../images/img_032.jpg)
 
 What else never replicates?
 Animations, particles, sounds — most cosmetic effects run locally. For example, character movement replicates position, speed, jump status — but not the actual animation clip. The animation plays on your local machine.
