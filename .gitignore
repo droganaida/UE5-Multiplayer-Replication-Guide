@@ -1,0 +1,15 @@
+# Unreal Engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vscode/
+*.sln
+*.VC.db
+*.VC.opendb
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
