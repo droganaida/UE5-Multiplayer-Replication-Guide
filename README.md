@@ -30,14 +30,12 @@ Check [SourceCode](https://github.com/droganaida/UE5.6-ThirdPerson-ListenServer-
 ## License
 
 All examples and text are shared under MIT license.  
-Use them in your own projects — no strings attached!
 
 ---
 
 ## About SilverCord-VR
 
-**SilverCord-VR** is an indie studio focusing on VR, multiplayer and R&D in Unreal Engine.  
-We believe Unreal knowledge should be clear and open.
+**SilverCord-VR** is an indie studio focusing on VR, multiplayer and R&D in Unreal Engine.
 
 If you find this useful — feel free to fork, share or get in touch with us for collaborations or consulting!
 
@@ -48,5 +46,3 @@ If you find this useful — feel free to fork, share or get in touch with us for
 ## Topics
 
 `#UnrealEngine` `#UE5` `#Multiplayer` `#Replication` `#Authority` `#ListenServer` `#Blueprint` `#Gamedev` `#VR`
-
----

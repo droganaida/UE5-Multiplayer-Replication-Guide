@@ -1,9 +1,9 @@
 # Unreal Engine Multiplayer: Authority and Replication Explained Simply
 
 **Hello, fellow programmers!**  
-My name is Aida Drogan. I’m the co-founder and lead developer at the small game studio **SilverCord-VR**, and in this article I’ll try to explain Unreal Engine’s multiplayer architecture in the simplest words possible (with real-life examples and plenty of diagrams).
+My name is Aida Drogan. I’m the co-founder and lead developer at the game studio **SilverCord-VR**, and in this article I’ll try to explain Unreal Engine’s multiplayer architecture in the simplest words possible (with real-life examples and plenty of diagrams).
 
-<hr style="height:1px;border:none;color:#ccc;background-color:#ccc;" />
+---
 
 **Network architecture…**
 Despite several years of working with UE and a solid portfolio of projects, I hadn’t touched network replication until recently (to be honest, I was avoiding it). There’s not much clear info, the official docs feel vague, and although everything is supposed to “just work out of the box”, what Epic actually put in that box is far from obvious.
@@ -46,10 +46,10 @@ Listen Server and Client are **Network Modes** in Unreal Engine. They define whe
 
 * **Standalone** — single player. This mode has one player who has full authority over the world and cannot accept connections from other players. Perfect for offline games with no networking.
 
-* **Dedicated Server** — a headless server. It’s ready to accept clients and has full authority over the game world, but it doesn’t have an active player. This server runs in the background on a dedicated machine, renders nothing, and simply handles player connections and enforces game rules.
+* **Dedicated Server** — a headless server. It’s ready to accept clients and has full authority over the game world, but it doesn’t have an active player. This server runs in the background on a dedicated machine, renders nothing, and simply handles player connections and enforces game rules.    
   You can’t just run a Dedicated Server build on your home PC to invite friends — it’s compiled from a special build of Unreal Engine and deployed to a proper server machine with solid hardware and a stable network.
-  This is the server type used for large-scale multiplayer — including the poster child of Unreal Engine: **Fortnite**.
-  Most indie devs probably won’t need a Dedicated Server (at least not early on).
+  This is the server type used for large-scale multiplayer — including the poster child of Unreal Engine: **Fortnite**.    
+  Most indie devs probably won’t need a Dedicated Server (at least not early on).    
   If you want to launch your game in this mode locally, you can enable **Launch Separate Server** in **Multiplayer Options** under **Editor Preferences** (in older UE versions, this option was called *Run Dedicated Server*).
 
 ![img\_004](../images/img_004.jpg)
@@ -58,7 +58,8 @@ If you run the game this way, all windows (or more, depending on your player cou
 
 ![img\_005](../images/img_005.jpg)
 
-* **Listen Server** — the classic “host player”. It has an active player and full authority, and waits for other players to join. It’s exactly what happens when you host a co-op session for your friends. It’s the same game copy your friend runs when they join you — but yours has the power to manage the world and keep it consistent. If a client disconnects and later rejoins, their character’s progress, loot, cleared areas — all of it will be exactly as the host left it. *(Example: in Baldur’s Gate 3, if a client disconnects, the host takes control of their characters until they return).* All saves also belong to the host player who launched the server.
+* **Listen Server** — the classic “host player”. It has an active player and full authority, and waits for other players to join. It’s exactly what happens when you host a co-op session for your friends. It’s the same game copy your friend runs when they join you — but yours has the power to manage the world and keep it consistent. If a client disconnects and later rejoins, their character’s progress, loot, cleared areas — all of it will be exactly as the host left it.  
+*(Example: in Baldur’s Gate 3, if a client disconnects, the host takes control of their characters until they return).* All saves also belong to the host player who launched the server.
 
 * **Client** — the guest player on the server. All the client truly “owns” is their character — although technically, the server runs it. The client just sends input and intent to the server. (More on this later.)
 
@@ -70,20 +71,20 @@ Here’s a quick comparison table for fellow diagram lovers (I love them too!):
 
 ![img\_006](../images/img_006.jpg)
 
-The client-server model is far more robust and scalable than peer-to-peer. All game state lives on the server — if players disconnect, the world stays intact. Plus, this model protects you from client-side cheating.
+*The client-server model is far more robust and scalable than peer-to-peer. All game state lives on the server — if players disconnect, the world stays intact. Plus, this model protects you from client-side cheating.*
 
 ---
 
 ## Server Authority: Who’s the Boss?
 
-Let’s dig into the heart of networked games.
+Let’s dig into the heart of networked games.  
 We keep talking about **Authority** — server privileges that the client does *not* have. A simple example: you join your friend’s hosted session. If you previously cleared an area in your local game, you’ll see those enemies again — because now you’re in *their* version of the world.
 
 ---
 
 ### A D\&D Analogy
 
-Step away from the computer: imagine a cozy, old-school Dungeons & Dragons session — a Dungeon Master, paper maps, plastic minis.
+Step away from the computer: imagine a cozy, old-school Dungeons & Dragons session — a Dungeon Master, paper maps, plastic minis.  
 The DM is your server. Depending on the session, the DM might be a Listen Server (if they also run a player character and join the party) or a Dedicated Server (just running the world).
 
 Players obey the DM. If the DM says *“Sure, roll again, you can sneak past the guard,”* the player’s action happens. If a player declares *“I summon 50 dragons to torch the final boss,”* the DM just smiles and says *“Roll for initiative — good luck with what’s in your inventory!”*
@@ -125,7 +126,7 @@ The same Actor can have different roles on server and clients — that’s the p
 
 ### Authority Checks
 
-Every event that affects a replicated object should run on the server.
+Every event that affects a replicated object should run on the server.  
 Use `Is Server` and `Has Authority` to check that. Almost always, `Has Authority` means “server” — but not always! For example, a **Projectile** (bullet or missile) often spawns on the client. The client has authority for this specific object — to avoid any noticeable lag when firing. But the server still checks its trajectory.
 
 ✅ **Important:** If you do anything inside `Tick`, always check `Has Authority` first!
@@ -150,7 +151,7 @@ The server receives the client’s movement intent, approves or rejects it — s
 
 Okay, we understand Pawns and Controllers. What about other Actors?
 
-Can you spawn a new Actor so *everyone* sees it?
+Can you spawn a new Actor so *everyone* sees it?  
 What happens if you just drop a new Cube into the world?
 
 ---
@@ -163,12 +164,12 @@ Spawn an Actor with a Static Mesh (Cube) in `Begin Play`, gated by `Is Server`.
 
 Result: the Cube appears in the server window only — clients don’t see it.
 
-But what if a client’s Pawn tries to walk through that spot?
+But what if a client’s Pawn tries to walk through that spot?  
 No visible Cube — but the Pawn bumps into an invisible wall.
 
 ![img\_011](../images/img_011.jpg)
 
-Now you get it: the server won’t let the client pass through — the rules are enforced on the server.
+Now you get it: the server won’t let the client pass through — the rules are enforced on the server.  
 The DM built a mountain — just forgot to bring the mini! So the players hit an invisible obstacle.
 
 What if the client spawns a Cube in the same spot?
@@ -222,8 +223,8 @@ The fix is simple: if an Actor has a physics component, it (and its parents) mus
 
 ## Replicated Variables & RPCs
 
-What if you want to add a health bar above your player’s head?
-Usually, you’d do this with a **Widget Component** and two variables:
+What if you want to add a health bar above your player’s head?  
+Usually, you’d do this with a **Widget Component** and two variables:  
 `MaxHP` (maximum health) and `CurrentHP` (current health).
 
 ![img\_021](../images/img_021.jpg)
@@ -238,7 +239,7 @@ This is where **replicated variables** come in. Mark them as `replicated` so all
 
 ![img\_022](../images/img_022.jpg)
 
-However, just making `CurrentHP` replicated and changing it on the client won’t work.
+However, just making `CurrentHP` replicated and changing it on the client won’t work.  
 Why not? Because, remember: only the server is allowed to change the rules of the game. The client can’t just change its own health at will.
 
 ---
@@ -253,7 +254,7 @@ Unreal Engine has three main RPC types:
 * **Multicast** — runs on the server and sends an event to *all* clients. Example: play a muzzle flash or buff effect. These are expensive — use them sparingly!
 * **Run On Owning Client** — the server calls an RPC for a *specific* client (the Pawn’s owner).
 
-To change a player’s health, you’d use `Run On Server` — put your logic for modifying `CurrentHP` there.
+To change a player’s health, you’d use `Run On Server` — put your logic for modifying `CurrentHP` there.  
 Also: mark it `Reliable`.
 
 ---
@@ -267,14 +268,14 @@ RPCs can be `Reliable` or `Unreliable`.
 
 `Reliable` RPCs are queued until they succeed — but if the queue overflows, the client gets disconnected. So **never spam Reliable server RPCs!** For example, when handling gunfire, add a timer — don’t trigger an RPC on every frame.
 
-What should be `Unreliable`? Cosmetic stuff like particle effects and sounds.
+What should be `Unreliable`? Cosmetic stuff like particle effects and sounds.  
 Character movement is `Unreliable` too — it syncs every frame, and flooding the Reliable buffer would break the server. UE’s movement system has its own buffer that drops old packets to avoid clogging the connection.
 
 In the case of health changes: definitely make that `Reliable`.
 
 ![img\_023](../images/img_023.jpg)
 
-Even so, visually nothing happens yet — the health bar only updates for the local player.
+Even so, visually nothing happens yet — the health bar only updates for the local player.  
 But if you log `CurrentHP` in `Tick`, you’ll see each game instance knows the *real* HP for every player.
 
 ![img\_025](../images/img_025.jpg)
@@ -286,7 +287,7 @@ But if you log `CurrentHP` in `Tick`, you’ll see each game instance knows the 
 
 ### `OnRepNotify` & Event Dispatchers
 
-The final step: actually update the health bar.
+The final step: actually update the health bar.  
 Logically, this should happen whenever `CurrentHP` changes.
 
 You *could* bind the ProgressBar’s `Percent` to the variable directly in the Widget.
@@ -298,7 +299,7 @@ But it’s better practice to use **`RepNotify`**: mark `CurrentHP` with `RepNot
 ![img\_027](../images/img_027.jpg)
 
 **Why is this better?**
-It runs *only* on the clients — so you don’t waste server RPCs for UI.
+It runs *only* on the clients — so you don’t waste server RPCs for UI.  
 Inside the `OnRepNotify` function, you can also fire an **Event Dispatcher** to handle the actual update.
 
 ![img\_028](../images/img_028.jpg)
@@ -321,12 +322,12 @@ Now, when you run the game, all health bars update in sync — for every client 
 
 Let’s wrap up with how the main Unreal Engine classes behave in a networked game — what replicates, what doesn’t, and how data flows between them.
 
-* **GameMode** — defines game rules: who wins, what happens on death, how much XP you get, etc. Exists *only* on the server. It doesn’t replicate to clients. In a shooter, it counts kills and ends rounds. In a battle royale, it knows who’s the last player standing. To pass info to players, it uses **GameState**.
+* **GameMode** — defines game rules: who wins, what happens on death, how much XP you get, etc. Exists *only* on the server. It doesn’t replicate to clients. In a shooter, it counts kills and ends rounds. In a battle royale, it knows who’s the last player standing. To pass info to players, it uses **GameState**.  
   (Think of it like the D\&D rulebook the DM checks.)
 
 * **GameState** — the match’s current state: score, time left, who’s winning. Replicates to *all* clients. Only the server updates it.
 
-* **PlayerState** — each player’s public info: name, score, team. Exists for each player. The server updates it and replicates it to relevant clients.
+* **PlayerState** — each player’s public info: name, score, team. Exists for each player. The server updates it and replicates it to relevant clients.  
   (Like a sticky note on your mini with your name, level, class.)
 
 * **PlayerController** — handles input from keyboard/mouse/gamepad. Controls the Pawn/Character on the map. Each player has one on both server and client — but only the server’s controller has authority. The client’s controller just forwards input.
@@ -337,7 +338,7 @@ Let’s wrap up with how the main Unreal Engine classes behave in a networked ga
 
 ![img\_032](../images/img_032.jpg)
 
-What else never replicates?
+What else never replicates?  
 Animations, particles, sounds — most cosmetic effects run locally. For example, character movement replicates position, speed, jump status — but not the actual animation clip. The animation plays on your local machine.
 
 ---
@@ -346,8 +347,8 @@ Animations, particles, sounds — most cosmetic effects run locally. For example
 
 Good multiplayer architecture means keeping the server load light — replicate *only* what’s needed, but never lose vital info that makes the world look the same for everyone.
 
-I hope my short walkthrough helps you grasp the basics of replication in Unreal Engine.
-Thanks for reading — and may your servers stay stable and full!
+I hope my short walkthrough helps you grasp the basics of replication in Unreal Engine.  
+**Thanks for reading — and may your servers stay stable and full!**
 
 ---
 
