@@ -1,9 +1,9 @@
 # Unreal Engine Multiplayer: Authority and Replication Explained Simply
 
-**Hello, fellow programmers!**
+**Hello, fellow programmers!**  
 My name is Aida Drogan. I’m the co-founder and lead developer at the small game studio **SilverCord-VR**, and in this article I’ll try to explain Unreal Engine’s multiplayer architecture in the simplest words possible (with real-life examples and plenty of diagrams).
 
----
+<hr style="height:1px;border:none;color:#ccc;background-color:#ccc;" />
 
 **Network architecture…**
 Despite several years of working with UE and a solid portfolio of projects, I hadn’t touched network replication until recently (to be honest, I was avoiding it). There’s not much clear info, the official docs feel vague, and although everything is supposed to “just work out of the box”, what Epic actually put in that box is far from obvious.
@@ -12,8 +12,8 @@ So when a client came to us with a game prototype and asked to deploy it for sev
 
 ---
 
-I’ll leave the link to my **Replication Graph template for 100+ players** here — https://github.com/droganaida/Replication_Graph_UE5.
-*(spoiler: the default replication system doesn’t cut it for this scale)*.
+I’ll leave the link to my **Replication Graph template for 100+ players** here — https://github.com/droganaida/Replication_Graph_UE5.  
+*(spoiler: the default replication system doesn’t cut it for this scale)*.  
 But if your game is meant for a cozy group of friends, then the engine’s standard tools are more than enough — you might not even need to open the code editor at all.
 
 ---
